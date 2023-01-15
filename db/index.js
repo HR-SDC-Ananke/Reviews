@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 
 // Schemas
-const Schema = mongoose.Schema;
-
-const reviewSchema = new Schema({
+const reviewSchema = new mongoose.Schema({
   review_id: Number,
   rating: Number,
   summary: String,
@@ -19,9 +17,12 @@ const reviewSchema = new Schema({
   }]
 });
 
-const productMetaSchema = new Schema({
+const productMetaSchema = new mongoose.Schema({
   product_id: Number,
   ratings: { 0: Number, 1: Number, 2: Number, 3: Number, 4: Number, 5: Number },
   recommended: { true: Number, false: Number },
   characteristics: [{ name: String, id: Number, value: Number }]
 });
+
+const Review = mongoose.model('Review', reviewSchema);
+const ProductMeta = mongoose.model('ProductMeta', productMetaSchema);
