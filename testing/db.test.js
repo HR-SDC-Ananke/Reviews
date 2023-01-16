@@ -1,4 +1,5 @@
-const db = require('../db/index.js');
+const mongodb = require('../db/index.js');
+const sqldb = require('../db/sql/models.js');
 
 describe('Mongoose', () => {
   describe('Review Model', () => {
@@ -18,7 +19,7 @@ describe('Mongoose', () => {
           { id: 2, url: "photo2Url" }
         ]
       };
-      const reviewInstance = new db.Review(review);
+      const reviewInstance = new mongodb.Review(review);
       expect(reviewInstance).not.toBe(null);
 
       // only goes one layer deep in nested objects...
@@ -47,7 +48,7 @@ describe('Mongoose', () => {
           { name: "Quality", id: 2, value: 4.00000 }
         ]
       };
-      const productMetaInstance = new db.ProductMeta(productMeta);
+      const productMetaInstance = new mongodb.ProductMeta(productMeta);
       expect(productMetaInstance).not.toBe(null);
 
       // only goes one layer deep in nested objects...
@@ -64,4 +65,35 @@ describe('Mongoose', () => {
       });
     });
   })
+});
+
+describe('SQL', () => {
+  it('should properly create an instance of the Review model', () => {
+    const review = {
+      id: 7,
+      rating: 5,
+      summary: "Great!",
+      recommend: true,
+      response: "Thanks",
+      body: "Wow, what a great product!",
+      date: new Date(),
+      reviewer_name: "carl",
+      helpfulness: 2
+    };
+    const reviewInstance = sqldb.models.Review.build(review);
+    expect(reviewInstance instanceof sqldb.models.Review).toBe(true);
+    expect(reviewInstance.rating).toBe(5);
+    expect(reviewInstance.id).toBe(7);
+
+    const review2 = { id: 4, rating: 3, reviewer_name: 'carl' };
+    const reviewInstance2 = sqldb.models.Review.build(review2);
+    console.log(reviewInstance2);
+    expect(reviewInstance2 instanceof sqldb.models.Review).toBe(true);
+    expect(reviewInstance2.rating).toBe(3);
+    expect(reviewInstance2.date).not.toBe(null);
+  });
+  it.todo('should properly create an instance of the Photo model');
+  it.todo('should properly create an instance of the Recommended model');
+  it.todo('should properly create an instance of the Rating model');
+  it.todo('should properly create an instance of the CharacteristicRating model');
 });

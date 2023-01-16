@@ -11,7 +11,7 @@ const sequelize = new Sequelize(
 );
 
 const Review = sequelize.define('Review', {
-  // id: { type: DataTypes.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
+  id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
   rating: { type: DataTypes.INTEGER },
   summary: { type: DataTypes.STRING }, // VARCHAR(255)
   recommend: { type: DataTypes.BOOLEAN },
@@ -24,7 +24,7 @@ const Review = sequelize.define('Review', {
 });
 
 const Photo = sequelize.define('Photo', {
-  url: { type: DataTypes.STRING }
+  url: { type: DataTypes.STRING },
   review_id: {
     type: DataTypes.INTEGER,
     references: { model: Review, key: 'id' }
@@ -52,3 +52,5 @@ const CharacteristicRating = sequelize.define('CharacteristicRating', {
   name: { type: DataTypes.STRING },
   value: { type: DataTypes.FLOAT }
 });
+
+module.exports = sequelize;
