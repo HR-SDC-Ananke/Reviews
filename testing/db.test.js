@@ -92,8 +92,34 @@ describe('SQL', () => {
     expect(reviewInstance2.rating).toBe(3);
     expect(reviewInstance2.date).not.toBe(null);
   });
-  it.todo('should properly create an instance of the Photo model');
-  it.todo('should properly create an instance of the Recommended model');
-  it.todo('should properly create an instance of the Rating model');
-  it.todo('should properly create an instance of the CharacteristicRating model');
+  it('should properly create an instance of the Photo model', () => {
+    const photo = { review_id: 7, url: "photourl" };
+    const photoInstance = sqldb.models.Photo.build(photo);
+    expect(photoInstance instanceof sqldb.models.Photo).toBe(true);
+    expect(photoInstance.review_id).toBe(7);
+    expect(photoInstance.url).toBe("photourl");
+  });
+  it('should properly create an instance of the Recommended model', () => {
+    const recommended = { true: 5, false: 7 };
+    const recInstance = sqldb.models.Recommended.build(recommended);
+    expect(recInstance instanceof sqldb.models.Recommended).toBe(true);
+    expect(recInstance instanceof sqldb.models.Review).toBe(false);
+    expect(recInstance.true).toBe(5);
+    expect(recInstance.false).toBe(7);
+  });
+  it('should properly create an instance of the Rating model', () => {
+    const rating = { product_id: 71000, 4: 5, 5: 10 };
+    const ratingInstance = sqldb.models.Rating.build(rating);
+    expect(ratingInstance instanceof sqldb.models.Rating).toBe(true);
+    expect(ratingInstance.product_id).toBe(rating.product_id);
+    expect(ratingInstance[4]).toBe(5);
+    expect(ratingInstance[3]).toBe(undefined);
+  });
+  it('should properly create an instance of the CharacteristicRating model', () => {
+    const charRating = { name: "Size", product_id: 71000, value: 4.8885 };
+    const charRatingInstance = sqldb.models.CharacteristicRating.build(charRating);
+    expect(charRatingInstance instanceof sqldb.models.CharacteristicRating).toBe(true);
+    expect(charRatingInstance.name).toBe(charRating.name);
+    expect(charRatingInstance.value).toBe(charRating.value);
+  });
 });
