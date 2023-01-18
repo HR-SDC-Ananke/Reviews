@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "server-dev": "nodemon server/index.js"
+    "server-dev": "nodemon server/index.js",
+    "etl": "node db/etl.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
+    "csv": "^6.2.5",
     "express": "^4.18.2",
     "mongoose": "^6.8.3",
     "mysql2": "^3.0.1",
