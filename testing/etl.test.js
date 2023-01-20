@@ -1,6 +1,7 @@
+const path = require('path');
+const mongoose = require('mongoose');
 const etl = require('../db/etl.js');
 const mongodb = require('../db/index.js');
-const path = require('path');
 
 const reviewsFile = path.join(__dirname, '../../data/reviews_small.csv');
 const photosFile = path.join(__dirname, '../../data/reviews_photos_small.csv');
@@ -8,27 +9,26 @@ const characteristicsFile = path.join(__dirname, '../../data/characteristics_sma
 const charReviewsFile = path.join(__dirname, '../../data/characteristics_reviews_small.csv');
 
 describe('Mongoose ETL', () => {
-  it('should load all csv files into the database in succession', () => {
-    etl.loadReviews(reviewsFile, (err) => {
-      if (err) return console.log(`error loading reviewsFile:`, err);
+  beforeAll(async () => {
+    await mongoose.connect('mongodb://localhost:27017/sdc-reviews');
+  });
 
-      etl.loadPhotos(photosFile, (err) => {
-        if (err) return console.log('error loading photosFile', err);
+  afterAll(async () => {
+    await mongodb.Review.deleteMany({});
+    await mongodb.ProductMeta.deleteMany({});
+    await mongoose.connection.close();
+  });
 
-        etl.loadCharacteristics(characteristicsFile, (err) => {
-          if (err) return console.log('error loading characteristicsFile', err);
-
-          etl.loadCharReviews(charReviewsFile, (err) => {
-            if (err) return console.log('error loadking charReviewsFile', err);
-
-            mongodb.Review.find({}, (err, results) => {
-              if (err) return console.log('error getting data from mongodb', err);
-              console.log(JSON.stringify(results));
-              expect(results).not.toBe(null);
-            });
-          });
-        });
-      });
-    });
+  it('should load all csv files into the database in succession', async () => {
+    await etl.loadReviews(reviewsFile)
+    .then(() => etl.loadPhotos(photosFile))
+    .then(() => etl.loadCharacteristics(characteristicsFile))
+    .then(() => etl.loadCharReviews(charReviewsFile))
+    .then(() => mongodb.Review.find({}))
+    .then((results) => {
+      console.log(JSON.stringify(results));
+      expect(results.length).toBe(9);
+    })
+    .catch(err => console.log('error loading data', err));
   });
 });
