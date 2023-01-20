@@ -6,13 +6,16 @@ describe('Mongoose', () => {
     it('should properly create an instance of the Review model', () => {
       const review = {
         review_id: 1,
+        product_id: 3,
         rating: 5,
         summary: "Great!",
-        recommend: true,
+        recommended: true,
+        reported: false,
         response: "Thanks",
         body: "Wow, what a great product!",
         date: new Date(),
         reviewer_name: "carl",
+        reviewer_email: "carl@carl.com",
         helpfulness: 2,
         photos: [
           { id: 1, url: "photoUrl" },
@@ -21,6 +24,7 @@ describe('Mongoose', () => {
       };
       const reviewInstance = new mongodb.Review(review);
       expect(reviewInstance).not.toBe(null);
+      console.log(reviewInstance);
 
       // only goes one layer deep in nested objects...
       Object.keys(review).forEach(key => {
@@ -73,17 +77,21 @@ describe('SQL', () => {
       id: 7,
       rating: 5,
       summary: "Great!",
-      recommend: true,
+      recommended: true,
+      reported: false,
       response: "Thanks",
       body: "Wow, what a great product!",
       date: new Date(),
       reviewer_name: "carl",
-      helpfulness: 2
+      reviewer_email: "carl@carl.com",
+      helpfulness: 2,
+      product_id: 3
     };
     const reviewInstance = sqldb.models.Review.build(review);
     expect(reviewInstance instanceof sqldb.models.Review).toBe(true);
     expect(reviewInstance.rating).toBe(5);
     expect(reviewInstance.id).toBe(7);
+    console.log(reviewInstance);
 
     const review2 = { id: 4, rating: 3, reviewer_name: 'carl' };
     const reviewInstance2 = sqldb.models.Review.build(review2);
