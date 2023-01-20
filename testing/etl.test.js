@@ -26,7 +26,7 @@ describe('Mongoose ETL', () => {
     .then(() => etl.loadCharReviews(charReviewsFile))
     .then(() => mongodb.Review.find({}))
     .then((results) => {
-      console.log(JSON.stringify(results));
+      console.log(JSON.stringify(results, null, 2));
       expect(results.length).toBe(9);
     })
     .catch(err => console.log('error loading data', err));
