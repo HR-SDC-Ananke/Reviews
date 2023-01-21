@@ -12,7 +12,7 @@ const reviewSchema = new Schema({
   summary: String,
   recommended: Boolean,
   reported: Boolean,
-  response: { type: String, default: '' },
+  response: String,
   body: String,
   date: Date,
   reviewer_name: String,

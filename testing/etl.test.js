@@ -11,6 +11,8 @@ const charReviewsFile = path.join(__dirname, '../../data/characteristics_reviews
 describe('Mongoose ETL', () => {
   beforeAll(async () => {
     await mongoose.connect('mongodb://localhost:27017/sdc-reviews');
+    await mongodb.Review.deleteMany({});
+    await mongodb.ProductMeta.deleteMany({});
   });
 
   afterAll(async () => {
@@ -24,11 +26,10 @@ describe('Mongoose ETL', () => {
     .then(() => etl.loadPhotos(photosFile))
     .then(() => etl.loadCharacteristics(characteristicsFile))
     .then(() => etl.loadCharReviews(charReviewsFile))
-    .then(() => mongodb.Review.find({}))
-    .then((results) => {
-      console.log(JSON.stringify(results, null, 2));
-      expect(results.length).toBe(9);
-    })
     .catch(err => console.log('error loading data', err));
+
+    const results = await mongodb.Review.find({});
+    console.log(JSON.stringify(results, null, 2));
+    expect(results.length).toBe(9);
   });
 });

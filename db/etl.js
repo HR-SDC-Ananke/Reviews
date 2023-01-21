@@ -5,12 +5,12 @@ const mongodb = require('./index.js');
 const sqldb = require('./sql/models.js');
 
 // helper function for removing single quotes from string data
-const parseData = (data) => {
-  return data.map(entry => {
-    let result = entry.replaceAll('\'', '');
-    return result === 'null' ? null : result;
-  });
-}
+const stripQuotes = (data) => data.map(entry => {
+  if (entry[0] === '\'' && entry[entry.length - 1] === '\'') {
+    return entry.substring(1, entry.length - 1);
+  }
+  return entry;
+});
 
 // file not hardcoded so I can test with smaller datasets
 const loadReviews = (reviewsFile) => {
@@ -19,13 +19,15 @@ const loadReviews = (reviewsFile) => {
 
     fs.createReadStream(reviewsFile)
     .pipe(parse({ delimiter: ',', from_line: 2 }))
-    .on('data', (row) => {
-      row = parseData(row);
+    .on('data', async (row) => {
+      // console.log(row);
+      row = stripQuotes(row);
+      console.log(row);
       let review = {
-        review_id: parseInt(row[0]),
-        product_id: parseInt(row[1]),
-        rating: parseInt(row[2]),
-        date: parseInt(row[3]),
+        review_id: parseInt(row[0].replaceAll('\'', '')),
+        product_id: parseInt(row[1].replaceAll('\'', '')),
+        rating: parseInt(row[2].replaceAll('\'', '')),
+        date: parseInt(row[3].replaceAll('\'', '')),
         summary: row[4],
         body: row[5],
         recommended: row[6] === 'true' ? true : false,
@@ -33,20 +35,18 @@ const loadReviews = (reviewsFile) => {
         reviewer_name: row[8],
         reviewer_email: row[9],
         response: row[10],
-        helpfulness: parseInt(row[11]),
+        helpfulness: parseInt(row[11].replaceAll('\'', '')),
         photos: []
       };
       console.log(JSON.stringify(review));
       const reviewInstance = new mongodb.Review(review);
-      reviewInstance.save((err, result) => {
-        if (err) return reject(err);
-      });
+      reviewInstance.save();
     })
-    .on('end', () => {
+    .on('end', async () => {
       console.log(`finished saving reviews`);
       resolve();
     })
-    .on('error', (err) => reject(err));
+    .on('error', (err) => reject(err))
   });
 };
 
