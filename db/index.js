@@ -26,7 +26,7 @@ const reviewSchema = new Schema({
 //   product_id: Number,
 //   ratings: { 0: Number, 1: Number, 2: Number, 3: Number, 4: Number, 5: Number },
 //   recommended: { true: Number, false: Number },
-//   characteristics: [{ name: String, id: Number, value: Number }]
+//   characteristics: [{ name: String, id: Number }]
 // });
 
 // Models

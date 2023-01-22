@@ -79,18 +79,60 @@ const loadPhotos = (photosFile) => {
   });
 };
 
-const loadCharacteristics = (characteristicsFile) => {
-  return new Promise((resolve, reject) => {
-    console.log(`loading characteristics...`);
-    resolve();
-  });
-}
 
 const loadCharReviews = (charReviewsFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading characteristic reviews...`);
-    resolve();
+
+    const readable = fs.createReadStream(charReviewsFile).pipe(parse({ delimiter: ",", from_line: 2 }));
+    readable.on('data', async (row) => {
+      row = stripQuotes(row);
+      const id = parseInt(row[1]);
+      const review_id = parseInt(row[2]);
+      const value = parseInt(row[3]);
+      readable.pause();
+      const review = await mongodb.Review.findOne({ review_id });
+      console.log(`review with id: ${review_id}: ${review}`);
+      review.characteristics.push({ name: '', id, value });
+      await review.save();
+      console.log(`updated review ${review_id}: ${review}`);
+      readable.resume();
+    });
+
+    readable.on('end', () => {
+      console.log('finished saving characteristic reviews');
+      resolve();
+    });
+
+    readable.on('error', err => reject(err));
   });
 }
+
+const loadCharacteristics = (characteristicsFile) => {
+  return new Promise((resolve, reject) => {
+    console.log(`loading characteristics...`);
+
+    const readable = fs.createReadStream(characteristicsFile).pipe(parse({ delimiter: ",", from_line: 2 }));
+    readable.on('data', async (row) => {
+      row = stripQuotes(row);
+      const id = parseInt(row[0]);
+      const product_id = parseInt(row[1]);
+      const name = row[2];
+      readable.pause();
+      const review = await mongodb.Review.findOne({ characteristics: { id } });
+      review.characteristics.filter(char => char.id === id)[0].name = name;
+      review.save();
+      readable.resume();
+    });
+
+    readable.on('end', () => {
+      console.log('finished saving characteristics');
+      resolve();
+    });
+
+    readable.on('error', err => reject(err));
+  });
+}
+
 
 module.exports = { loadReviews, loadPhotos, loadCharacteristics, loadCharReviews };

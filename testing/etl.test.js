@@ -6,7 +6,7 @@ const mongodb = require('../db/index.js');
 const reviewsFile = path.join(__dirname, '../../data/reviews_small.csv');
 const photosFile = path.join(__dirname, '../../data/reviews_photos_small.csv');
 const characteristicsFile = path.join(__dirname, '../../data/characteristics_small.csv');
-const charReviewsFile = path.join(__dirname, '../../data/characteristics_reviews_small.csv');
+const charReviewsFile = path.join(__dirname, '../../data/characteristic_reviews_small.csv');
 
 describe('Mongoose ETL', () => {
   beforeAll(async () => {
@@ -43,7 +43,7 @@ describe('Mongoose ETL', () => {
     expect(results.length).toBe(9);
 
     const review5 = await mongodb.Review.findOne({ review_id: 5 });
-    console.log(`review5: ${review5.photos}`);
+    console.log(`review5: ${review5}`);
     expect(review5.photos).not.toBe(null);
     expect(review5.photos.length).toBe(3);
     expect(review5.photos.map(photo => photo.id).includes(2)).toBe(true);
@@ -51,14 +51,28 @@ describe('Mongoose ETL', () => {
     expect(review5.photos.filter(photo => photo.id === 3)[0].url).toBe('https://images.unsplash.com/photo-1487349384428-12b47aca925e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80');
   });
 
-  it('should successfully add characteristics to the reviews loaded in the database', async () => {
-    await etl.loadCharacteristics(characteristicsFile);
+  it('should successfully add characteristic reviews to the reviews loaded in the database', async () => {
+    await etl.loadReviews(reviewsFile);
+    await etl.loadCharReviews(charReviewsFile);
+    // await etl.loadCharacteristics(characteristicsFile);
 
-    const results = await mongodb.product
+    const results = await mongodb.Review.find({});
+    expect(results.length).toBe(9);
 
+    const review1 = await mongodb.Review.findOne({ review_id: 1 });
+    console.log(`review1: ${review1}`);
+    expect(review1.characteristics).not.toBe(null);
+    expect(review1.characteristics.length).toBe(4);
+
+    // let charNames = ['Fit', 'Length', 'Comfort', 'Quality'];
+    // let fakeCharNames = ['Snugness', 'Opacity'];
+    // let chars = review1.characteristics.map(char => char.name);
+    // charNames.forEach(charName => expect(chars.includes(charName)).toBe(false)); // change to true
+    // charNames.forEach(charName => expect(chars.includes(charName)).toBe(false));
+    expect(review1.characteristics.filter(char => char.id === 4)[0].value).toBe(4);
   });
 
-  it.todo('should successfully add characteristic reviews to the reviews loaded in the database');
+  it.todo('should add characteristic names to all characteristics on all reviews loaded in the database');
 
   it.todo('should load all data from all csv files into the database');
 });
