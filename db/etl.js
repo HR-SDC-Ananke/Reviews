@@ -17,17 +17,16 @@ const loadReviews = (reviewsFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading reviews...`);
 
-    fs.createReadStream(reviewsFile)
-    .pipe(parse({ delimiter: ',', from_line: 2 }))
-    .on('data', async (row) => {
-      // console.log(row);
+    const readable = fs.createReadStream(reviewsFile)
+    .pipe(parse({ delimiter: ',', from_line: 2 }));
+    readable.on('data', async (row) => {
       row = stripQuotes(row);
-      console.log(row);
+
       let review = {
-        review_id: parseInt(row[0].replaceAll('\'', '')),
-        product_id: parseInt(row[1].replaceAll('\'', '')),
-        rating: parseInt(row[2].replaceAll('\'', '')),
-        date: parseInt(row[3].replaceAll('\'', '')),
+        review_id: parseInt(row[0]),
+        product_id: parseInt(row[1]),
+        rating: parseInt(row[2]),
+        date: parseInt(row[3]),
         summary: row[4],
         body: row[5],
         recommended: row[6] === 'true' ? true : false,
@@ -35,18 +34,20 @@ const loadReviews = (reviewsFile) => {
         reviewer_name: row[8],
         reviewer_email: row[9],
         response: row[10],
-        helpfulness: parseInt(row[11].replaceAll('\'', '')),
+        helpfulness: parseInt(row[11]),
         photos: []
       };
-      console.log(JSON.stringify(review));
+
       const reviewInstance = new mongodb.Review(review);
-      reviewInstance.save();
-    })
-    .on('end', async () => {
+      readable.pause();
+      await reviewInstance.save();
+      readable.resume();
+    });
+    readable.on('end', async () => {
       console.log(`finished saving reviews`);
       resolve();
-    })
-    .on('error', (err) => reject(err))
+    });
+    readable.on('error', (err) => reject(err));
   });
 };
 

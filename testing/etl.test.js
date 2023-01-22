@@ -22,11 +22,10 @@ describe('Mongoose ETL', () => {
   });
 
   it('should load all csv files into the database in succession', async () => {
-    await etl.loadReviews(reviewsFile)
-    .then(() => etl.loadPhotos(photosFile))
-    .then(() => etl.loadCharacteristics(characteristicsFile))
-    .then(() => etl.loadCharReviews(charReviewsFile))
-    .catch(err => console.log('error loading data', err));
+    await etl.loadReviews(reviewsFile);
+    await etl.loadPhotos(photosFile);
+    await etl.loadCharacteristics(characteristicsFile);
+    await etl.loadCharReviews(charReviewsFile);
 
     const results = await mongodb.Review.find({});
     console.log(JSON.stringify(results, null, 2));
