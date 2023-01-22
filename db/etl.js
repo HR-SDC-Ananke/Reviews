@@ -17,8 +17,8 @@ const loadReviews = (reviewsFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading reviews...`);
 
-    const readable = fs.createReadStream(reviewsFile)
-    .pipe(parse({ delimiter: ',', from_line: 2 }));
+    const readable = fs.createReadStream(reviewsFile).pipe(parse({ delimiter: ',', from_line: 2 }));
+
     readable.on('data', async (row) => {
       row = stripQuotes(row);
 
@@ -43,7 +43,7 @@ const loadReviews = (reviewsFile) => {
       await reviewInstance.save();
       readable.resume();
     });
-    readable.on('end', async () => {
+    readable.on('end', () => {
       console.log(`finished saving reviews`);
       resolve();
     });
@@ -54,7 +54,28 @@ const loadReviews = (reviewsFile) => {
 const loadPhotos = (photosFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading photos...`);
-    resolve();
+
+    const readable = fs.createReadStream(photosFile).pipe(parse({ delimiter: ",", from_line: 2 }));
+
+    readable.on('data', async (row) => {
+      row = stripQuotes(row);
+      const id = row[0];
+      const review_id = parseInt(row[1]);
+      const url = row[2];
+      readable.pause();
+      const review = await mongodb.Review.findOne({ review_id });
+      console.log(`review for review_id ${review_id}: ${review}`);
+      review.photos.push({ id, url });
+      await review.save();
+      readable.resume();
+    });
+
+    readable.on('end', () => {
+      console.log('finished saving photos');
+      resolve();
+    });
+
+    readable.on('error', err => reject(err));
   });
 };
 

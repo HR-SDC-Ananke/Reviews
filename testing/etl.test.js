@@ -11,24 +11,43 @@ const charReviewsFile = path.join(__dirname, '../../data/characteristics_reviews
 describe('Mongoose ETL', () => {
   beforeAll(async () => {
     await mongoose.connect('mongodb://localhost:27017/sdc-reviews');
+  });
+
+  beforeEach(async () => {
+    await mongodb.Review.deleteMany({});
+    await mongodb.ProductMeta.deleteMany({});
+  });
+
+  afterEach(async () => {
     await mongodb.Review.deleteMany({});
     await mongodb.ProductMeta.deleteMany({});
   });
 
   afterAll(async () => {
-    await mongodb.Review.deleteMany({});
-    await mongodb.ProductMeta.deleteMany({});
     await mongoose.connection.close();
   });
 
-  it('should load all csv files into the database in succession', async () => {
+  it('should successfully load reviews into the database in succession', async () => {
     await etl.loadReviews(reviewsFile);
-    await etl.loadPhotos(photosFile);
-    await etl.loadCharacteristics(characteristicsFile);
-    await etl.loadCharReviews(charReviewsFile);
 
     const results = await mongodb.Review.find({});
-    console.log(JSON.stringify(results, null, 2));
+    // console.log(JSON.stringify(results, null, 2));
     expect(results.length).toBe(9);
   });
+
+  it('should successfully add photos to reviews loaded in the database', async () => {
+    await etl.loadReviews(reviewsFile);
+    await etl.loadPhotos(photosFile);
+
+    const results = await mongodb.Review.find({});
+    expect(results.length).toBe(9);
+
+    const review5 = await mongodb.Review.findOne({ review_id: 5 });
+    console.log(`review5: ${review5.photos}`);
+    expect(review5.photos).not.toBe(null);
+    expect(review5.photos.length).toBe(3);
+    expect(review5.photos.map(photo => photo.id).includes(2)).toBe(true);
+    expect(review5.photos.map(photo => photo.id).includes(3)).toBe(true);
+    expect(review5.photos.filter(photo => photo.id === 3)[0].url).toBe('https://images.unsplash.com/photo-1487349384428-12b47aca925e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80');
+  })
 });
