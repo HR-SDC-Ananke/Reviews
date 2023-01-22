@@ -15,12 +15,12 @@ describe('Mongoose ETL', () => {
 
   beforeEach(async () => {
     await mongodb.Review.deleteMany({});
-    await mongodb.ProductMeta.deleteMany({});
+    // await mongodb.ProductMeta.deleteMany({});
   });
 
   afterEach(async () => {
     await mongodb.Review.deleteMany({});
-    await mongodb.ProductMeta.deleteMany({});
+    // await mongodb.ProductMeta.deleteMany({});
   });
 
   afterAll(async () => {
@@ -49,5 +49,16 @@ describe('Mongoose ETL', () => {
     expect(review5.photos.map(photo => photo.id).includes(2)).toBe(true);
     expect(review5.photos.map(photo => photo.id).includes(3)).toBe(true);
     expect(review5.photos.filter(photo => photo.id === 3)[0].url).toBe('https://images.unsplash.com/photo-1487349384428-12b47aca925e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80');
-  })
+  });
+
+  it('should successfully add characteristics to the reviews loaded in the database', async () => {
+    await etl.loadCharacteristics(characteristicsFile);
+
+    const results = await mongodb.product
+
+  });
+
+  it.todo('should successfully add characteristic reviews to the reviews loaded in the database');
+
+  it.todo('should load all data from all csv files into the database');
 });

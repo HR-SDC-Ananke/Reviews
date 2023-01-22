@@ -18,18 +18,19 @@ const reviewSchema = new Schema({
   reviewer_name: String,
   reviewer_email: String,
   helpfulness: Number,
-  photos: [{ id: Number, url: String }]
-});
-
-const productMetaSchema = new Schema({
-  product_id: Number,
-  ratings: { 0: Number, 1: Number, 2: Number, 3: Number, 4: Number, 5: Number },
-  recommended: { true: Number, false: Number },
+  photos: [{ id: Number, url: String }],
   characteristics: [{ name: String, id: Number, value: Number }]
 });
 
+// const productMetaSchema = new Schema({
+//   product_id: Number,
+//   ratings: { 0: Number, 1: Number, 2: Number, 3: Number, 4: Number, 5: Number },
+//   recommended: { true: Number, false: Number },
+//   characteristics: [{ name: String, id: Number, value: Number }]
+// });
+
 // Models
 const Review = mongoose.model('Review', reviewSchema);
-const ProductMeta = mongoose.model('ProductMeta', productMetaSchema);
+// const ProductMeta = mongoose.model('ProductMeta', productMetaSchema);
 
-module.exports = { Review, ProductMeta };
+module.exports = { Review };
