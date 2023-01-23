@@ -29,9 +29,7 @@ describe('Mongoose ETL', () => {
 
   it('should successfully load reviews into the database in succession', async () => {
     await etl.loadReviews(reviewsFile);
-
     const results = await mongodb.Review.find({});
-    // console.log(JSON.stringify(results, null, 2));
     expect(results.length).toBe(9);
   });
 
@@ -43,7 +41,6 @@ describe('Mongoose ETL', () => {
     expect(results.length).toBe(9);
 
     const review5 = await mongodb.Review.findOne({ review_id: 5 });
-    console.log(`review5: ${review5}`);
     expect(review5.photos).not.toBe(null);
     expect(review5.photos.length).toBe(3);
     expect(review5.photos.map(photo => photo.id).includes(2)).toBe(true);
@@ -54,25 +51,57 @@ describe('Mongoose ETL', () => {
   it('should successfully add characteristic reviews to the reviews loaded in the database', async () => {
     await etl.loadReviews(reviewsFile);
     await etl.loadCharReviews(charReviewsFile);
-    // await etl.loadCharacteristics(characteristicsFile);
 
     const results = await mongodb.Review.find({});
     expect(results.length).toBe(9);
 
     const review1 = await mongodb.Review.findOne({ review_id: 1 });
-    console.log(`review1: ${review1}`);
     expect(review1.characteristics).not.toBe(null);
     expect(review1.characteristics.length).toBe(4);
 
-    // let charNames = ['Fit', 'Length', 'Comfort', 'Quality'];
-    // let fakeCharNames = ['Snugness', 'Opacity'];
-    // let chars = review1.characteristics.map(char => char.name);
-    // charNames.forEach(charName => expect(chars.includes(charName)).toBe(false)); // change to true
-    // charNames.forEach(charName => expect(chars.includes(charName)).toBe(false));
     expect(review1.characteristics.filter(char => char.id === 4)[0].value).toBe(4);
   });
 
-  it.todo('should add characteristic names to all characteristics on all reviews loaded in the database');
+  it('should add characteristic names to all characteristics on all reviews loaded in the database', async () => {
+    await etl.loadReviews(reviewsFile);
+    await etl.loadCharReviews(charReviewsFile);
+    await etl.loadCharacteristics(characteristicsFile);
 
-  it.todo('should load all data from all csv files into the database');
+    const results = await mongodb.Review.find({});
+    expect(results.length).toBe(9);
+
+    const review1 = await mongodb.Review.findOne({ review_id: 1 });
+    expect(review1.characteristics).not.toBe(null);
+    expect(review1.characteristics.length).toBe(4);
+
+    let charNames = ['Fit', 'Length', 'Comfort', 'Quality'];
+    let fakeCharNames = ['Snugness', 'Opacity'];
+    let chars = review1.characteristics.map(char => char.name);
+    charNames.forEach(charName => expect(chars.includes(charName)).toBe(true));
+    fakeCharNames.forEach(charName => expect(chars.includes(charName)).toBe(false));
+    expect(review1.characteristics.filter(char => char.id === 4)[0].value).toBe(4);
+  });
+
+  it('should load all data from all csv files into the database', async () => {
+    await etl.loadReviews(reviewsFile);
+    await etl.loadPhotos(photosFile);
+    await etl.loadCharReviews(charReviewsFile);
+    await etl.loadCharacteristics(characteristicsFile);
+
+    const results = await mongodb.Review.find({});
+    expect(results.length).toBe(9);
+
+    const review1 = await mongodb.Review.findOne({ review_id: 1 });
+    expect(review1.characteristics.length).toBe(4);
+    const charNames = ['Fit', 'Length', 'Comfort', 'Quality'];
+    let chars = review1.characteristics.map(char => char.name);
+    charNames.forEach(charName => expect(chars.includes(charName)).toBe(true));
+
+    const review5 = await mongodb.Review.findOne({ review_id: 5 });
+    expect(review5.photos).not.toBe(null);
+    expect(review5.photos.length).toBe(3);
+    expect(review5.photos.map(photo => photo.id).includes(2)).toBe(true);
+    expect(review5.photos.map(photo => photo.id).includes(3)).toBe(true);
+    expect(review5.photos.filter(photo => photo.id === 3)[0].url).toBe('https://images.unsplash.com/photo-1487349384428-12b47aca925e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80');
+  });
 });

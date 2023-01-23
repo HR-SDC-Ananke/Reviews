@@ -64,7 +64,7 @@ const loadPhotos = (photosFile) => {
       const url = row[2];
       readable.pause();
       const review = await mongodb.Review.findOne({ review_id });
-      console.log(`review for review_id ${review_id}: ${review}`);
+      // console.log(`review for review_id ${review_id}: ${review}`);
       review.photos.push({ id, url });
       await review.save();
       readable.resume();
@@ -92,10 +92,10 @@ const loadCharReviews = (charReviewsFile) => {
       const value = parseInt(row[3]);
       readable.pause();
       const review = await mongodb.Review.findOne({ review_id });
-      console.log(`review with id: ${review_id}: ${review}`);
+      // console.log(`review with id: ${review_id}: ${review}`);
       review.characteristics.push({ name: '', id, value });
       await review.save();
-      console.log(`updated review ${review_id}: ${review}`);
+      // console.log(`updated review ${review_id}: ${review}`);
       readable.resume();
     });
 
@@ -119,9 +119,13 @@ const loadCharacteristics = (characteristicsFile) => {
       const product_id = parseInt(row[1]);
       const name = row[2];
       readable.pause();
-      const review = await mongodb.Review.findOne({ characteristics: { id } });
-      review.characteristics.filter(char => char.id === id)[0].name = name;
-      review.save();
+      // console.log(`id: ${id}`);
+      const review = await mongodb.Review.findOne({ 'characteristics.id': id });
+      if (review) {
+        review.characteristics.filter(char => char.id === id)[0].name = name;
+        await review.save();
+      }
+      // console.log(`review: ${review}`);
       readable.resume();
     });
 
