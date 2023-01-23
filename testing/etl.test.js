@@ -74,11 +74,14 @@ describe('Mongoose ETL', () => {
     expect(review1.characteristics).not.toBe(null);
     expect(review1.characteristics.length).toBe(4);
 
+    const review2 = await mongodb.Review.findOne({ review_id: 2 });
+
     let charNames = ['Fit', 'Length', 'Comfort', 'Quality'];
     let fakeCharNames = ['Snugness', 'Opacity'];
     let chars = review1.characteristics.map(char => char.name);
-    charNames.forEach(charName => expect(chars.includes(charName)).toBe(true));
-    fakeCharNames.forEach(charName => expect(chars.includes(charName)).toBe(false));
+    let chars2 = review2.characteristics.map(char2 => char2.name);
+    charNames.forEach(charName => expect(chars.includes(charName) && chars2.includes(charName)).toBe(true));
+    fakeCharNames.forEach(charName => expect(chars.includes(charName) || chars2.includes(charName)).toBe(false));
     expect(review1.characteristics.filter(char => char.id === 4)[0].value).toBe(4);
   });
 

@@ -120,10 +120,13 @@ const loadCharacteristics = (characteristicsFile) => {
       const name = row[2];
       readable.pause();
       // console.log(`id: ${id}`);
-      const review = await mongodb.Review.findOne({ 'characteristics.id': id });
-      if (review) {
-        review.characteristics.filter(char => char.id === id)[0].name = name;
-        await review.save();
+      const reviews = await mongodb.Review.find({ 'characteristics.id': id });
+      if (reviews) {
+        console.log(reviews);
+        reviews.forEach(async (review) => {
+          review.characteristics.filter(char => char.id === id)[0].name = name;
+          await review.save();
+        })
       }
       // console.log(`review: ${review}`);
       readable.resume();
@@ -144,6 +147,14 @@ const runETL = async (reviewsFile, photosFile, charReviewsFile, characteristicsF
   await loadPhotos(photosFile);
   await loadCharReviews(charReviewsFile);
   await loadCharacteristics(characteristicsFile);
+}
+
+// take command-line arguments for files and load
+if (process.argv.length === 6) {
+  console.log(process.argv);
+  const filepaths = process.argv.slice(2).map(arg => path.join(__dirname, '../', arg));
+  console.log(...filepaths);
+  const loaded = runETL(...filepaths);
 }
 
 module.exports = { loadReviews, loadPhotos, loadCharacteristics, loadCharReviews };
