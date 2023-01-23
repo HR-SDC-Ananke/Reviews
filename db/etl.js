@@ -138,5 +138,12 @@ const loadCharacteristics = (characteristicsFile) => {
   });
 }
 
+// run etl process with data
+const runETL = async (reviewsFile, photosFile, charReviewsFile, characteristicsFile) => {
+  await loadReviews(reviewsFile);
+  await loadPhotos(photosFile);
+  await loadCharReviews(charReviewsFile);
+  await loadCharacteristics(characteristicsFile);
+}
 
 module.exports = { loadReviews, loadPhotos, loadCharacteristics, loadCharReviews };
