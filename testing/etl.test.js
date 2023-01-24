@@ -86,10 +86,12 @@ describe('Mongoose ETL', () => {
   });
 
   it('should load all data from all csv files into the database', async () => {
+    console.time('etlTest');
     await etl.loadReviews(reviewsFile);
     await etl.loadPhotos(photosFile);
     await etl.loadCharReviews(charReviewsFile);
     await etl.loadCharacteristics(characteristicsFile);
+    console.timeEnd('etlTest');
 
     const results = await mongodb.Review.find({});
     expect(results.length).toBe(9);
