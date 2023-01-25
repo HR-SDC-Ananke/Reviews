@@ -7,10 +7,11 @@
     "test": "jest",
     "server-dev": "nodemon server/index.js",
     "etl-small": "node db/etl.js ../data/reviews_small.csv ../data/reviews_photos_small.csv ../data/characteristic_reviews_small.csv ../data/characteristics_small.csv",
+    "update-etl-medium": "node db/etl.js ../data/reviews_photos_medium.csv ../data/characteristic_reviews_medium.csv ../data/characteristics_small.csv",
     "etl": "node db/etl.js ../data/reviews.csv ../data/reviews_photos.csv ../data/characteristic_reviews.csv ../data/characteristics.csv",
-    "make-photos-file": "node ./helpers/etl-createFiles.js ../data/reviews_photos.csv ../data/reviews_photos_medium.csv 1000",
-    "make-charReviews-file": "node ./helpers/etl-createFiles.js ../data/characteristic_reviews.csv ../data/characteristic_reviews_medium.csv 1000",
-    "make-chars-file": "node ./helpers/etl-createFiles.js ../data/characteristics.csv ../data/characteristics_medium.csv 1000"
+    "make-photos-file": "node ./helpers/etl-createFiles.js ../data/reviews_photos.csv ../data/reviews_photos_medium.csv 10000",
+    "make-charReviews-file": "node ./helpers/etl-createFiles.js ../data/characteristic_reviews.csv ../data/characteristic_reviews_medium.csv 10000",
+    "make-chars-file": "node ./helpers/etl-createFiles.js ../data/characteristics.csv ../data/characteristics_medium.csv 10000"
   },
   "repository": {
     "type": "git",
