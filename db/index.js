@@ -6,7 +6,7 @@ mongoose.connect('mongodb://localhost:27017/sdc-reviews');
 
 // Schemas
 const reviewSchema = new Schema({
-  review_id: Number,
+  review_id: { type: Number, index: true },
   product_id: Number,
   rating: Number,
   summary: String,
@@ -18,8 +18,8 @@ const reviewSchema = new Schema({
   reviewer_name: String,
   reviewer_email: String,
   helpfulness: Number,
-  photos: [{ id: Number, url: String }],
-  characteristics: [{ name: String, id: Number, value: Number }]
+  photos: [{ id: { type: Number, index: true }, url: String }],
+  characteristics: [{ name: String, id: { type: Number, index: true }, value: Number }]
 });
 
 // const productMetaSchema = new Schema({
