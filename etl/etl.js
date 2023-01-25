@@ -40,21 +40,27 @@ const loadReviews = (reviewsFile) => {
         reviewer_email: row[9],
         response: row[10],
         helpfulness: parseInt(row[11]),
-        photos: []
+        photos: [],
+        characteristics: []
       };
 
       const reviewInstance = new mongodb.Review(review);
-      buffer.push(reviewInstance);
+      buffer.push({ insertOne: { document: reviewInstance } });
       if (count % 10000 === 0) {
         readable.pause();
-        await mongodb.bulkWrite(buffer);
+        await mongodb.Review.bulkWrite(buffer);
         readable.resume();
         buffer = [];
       }
       count++;
     });
 
-    readable.on('end', () => {
+    readable.on('end', async () => {
+      if (buffer.length) {
+        readable.pause();
+        await mongodb.Review.bulkWrite(buffer);
+        readable.resume();
+      }
       console.log(`finished saving reviews`);
       resolve();
     });
@@ -67,6 +73,7 @@ const loadPhotos = (photosFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading photos...`);
     let count = 0;
+    let buffer = [];
 
     const readable = fs.createReadStream(photosFile).pipe(parse({ delimiter: ",", from_line: 2 }));
 
@@ -78,15 +85,28 @@ const loadPhotos = (photosFile) => {
       const id = row[0];
       const review_id = parseInt(row[1]);
       const url = row[2];
-      readable.pause();
-      const review = await mongodb.Review.findOne({ review_id });
-      review.photos.push({ id, url });
-      await review.save();
+      const update = {
+        updateOne: {
+          filter: { review_id },
+          update: { $push: { photos: { id, url } } }
+        }
+      };
+      buffer.push(update);
+      if (count % 10000 === 0) {
+        readable.pause();
+        await mongodb.Review.bulkWrite(buffer);
+        readable.resume();
+        buffer = [];
+      }
       count++;
-      readable.resume();
     });
 
-    readable.on('end', () => {
+    readable.on('end', async () => {
+      if (buffer.length) {
+        readable.pause();
+        await mongodb.Review.bulkWrite(buffer);
+        readable.resume();
+      }
       console.log('finished saving photos');
       resolve();
     });
@@ -100,6 +120,7 @@ const loadCharReviews = (charReviewsFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading characteristic reviews...`);
     let count = 0;
+    let buffer = [];
 
     const readable = fs.createReadStream(charReviewsFile).pipe(parse({ delimiter: ",", from_line: 2 }));
     readable.on('data', async (row) => {
@@ -110,15 +131,28 @@ const loadCharReviews = (charReviewsFile) => {
       const id = parseInt(row[1]);
       const review_id = parseInt(row[2]);
       const value = parseInt(row[3]);
-      readable.pause();
-      const review = await mongodb.Review.findOne({ review_id });
-      review.characteristics.push({ name: '', id, value });
-      await review.save();
+      const update = {
+        updateOne: {
+          filter: { review_id },
+          update: { $push: { characteristics: { name: '', id, value } } }
+        }
+      };
+      buffer.push(update);
+      if (count % 10000 === 0) {
+        readable.pause();
+        await mongodb.Review.bulkWrite(buffer);
+        readable.resume();
+        buffer = [];
+      }
       count++;
-      readable.resume();
     });
 
-    readable.on('end', () => {
+    readable.on('end', async () => {
+      if (buffer.length) {
+        readable.pause();
+        await mongodb.Review.bulkWrite(buffer);
+        readable.resume();
+      }
       console.log('finished saving characteristic reviews');
       resolve();
     });
@@ -131,6 +165,7 @@ const loadCharacteristics = (characteristicsFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading characteristics...`);
     let count = 0;
+    let buffer = [];
 
     const readable = fs.createReadStream(characteristicsFile).pipe(parse({ delimiter: ",", from_line: 2 }));
     readable.on('data', async (row) => {
@@ -141,22 +176,29 @@ const loadCharacteristics = (characteristicsFile) => {
       const id = parseInt(row[0]);
       const product_id = parseInt(row[1]);
       const name = row[2];
-      readable.pause();
-      const reviews = await mongodb.Review.find({ 'characteristics.id': id });
-      if (reviews) {
-        if (count % 10000 === 0) {
-          console.log(`number of reviews with this char id: ${reviews.length}`);
+      const update = {
+        updateMany: {
+          filter: { 'characteristics.id': id },
+          update: { $set: { 'characteristics.$[char].name': name } },
+          arrayFilters: [{ 'char.id': id }]
         }
-        reviews.forEach(async (review) => {
-          review.characteristics.filter(char => char.id === id)[0].name = name;
-          await review.save();
-          count++;
-        });
+      };
+      buffer.push(update);
+      if (count % 10000 === 0) {
+        readable.pause();
+        await mongodb.Review.bulkWrite(buffer);
+        readable.resume();
+        buffer = [];
       }
-      readable.resume();
+      count++;
     });
 
-    readable.on('end', () => {
+    readable.on('end', async () => {
+      if (buffer.length) {
+        readable.pause();
+        await mongodb.Review.bulkWrite(buffer);
+        readable.resume();
+      }
       console.log('finished saving characteristics');
       resolve();
     });
