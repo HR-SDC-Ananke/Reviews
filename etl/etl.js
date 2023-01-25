@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const { parse } = require('csv-parse');
-const mongodb = require('./index.js');
-const sqldb = require('./sql/models.js');
+const mongodb = require('../db/index.js');
+const sqldb = require('../db/sql/models.js');
 
 // helper function for removing single quotes from string data
 const stripQuotes = (data) => data.map(entry => {
@@ -17,6 +17,7 @@ const loadReviews = (reviewsFile) => {
   return new Promise((resolve, reject) => {
     console.log(`loading reviews...`);
     let count = 0;
+    let buffer = [];
 
     const readable = fs.createReadStream(reviewsFile).pipe(parse({ delimiter: ',', from_line: 2 }));
 
@@ -43,15 +44,21 @@ const loadReviews = (reviewsFile) => {
       };
 
       const reviewInstance = new mongodb.Review(review);
-      readable.pause();
-      await reviewInstance.save();
+      buffer.push(reviewInstance);
+      if (count % 10000 === 0) {
+        readable.pause();
+        await mongodb.bulkWrite(buffer);
+        readable.resume();
+        buffer = [];
+      }
       count++;
-      readable.resume();
     });
+
     readable.on('end', () => {
       console.log(`finished saving reviews`);
       resolve();
     });
+
     readable.on('error', (err) => reject(err));
   });
 };
@@ -183,7 +190,7 @@ const updateReviewsData = async (photosFile, charReviewsFile, characteristicsFil
 }
 
 // take command-line arguments for files and load
-if (process.argv.length >= 5) {
+if (process.argv.length >= 5 && argv[1] === 'run') {
   const filepaths = process.argv.slice(2).map(arg => path.join(__dirname, '../', arg));
   process.argv.length === 5 ? updateReviewsData(...filepaths) : runETL(...filepaths);
 }

@@ -1,6 +1,6 @@
 const path = require('path');
 const mongoose = require('mongoose');
-const etl = require('../db/etl.js');
+const etl = require('../etl/etl.js');
 const mongodb = require('../db/index.js');
 
 const reviewsFile = path.join(__dirname, '../../data/reviews_small.csv');
