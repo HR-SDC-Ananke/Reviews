@@ -14,11 +14,13 @@ const Review = sequelize.define('Review', {
   id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true },
   rating: { type: DataTypes.INTEGER },
   summary: { type: DataTypes.STRING }, // VARCHAR(255)
-  recommend: { type: DataTypes.BOOLEAN },
+  recommended: { type: DataTypes.BOOLEAN },
   response: { type: DataTypes.TEXT },
+  reported: { type: DataTypes.BOOLEAN },
   body: { type: DataTypes.TEXT },
   date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   reviewer_name: { type: DataTypes.STRING },
+  reviewer_email: { type: DataTypes.STRING },
   helpfulness: { type: DataTypes.INTEGER },
   product_id: { type: DataTypes.INTEGER }
 });
