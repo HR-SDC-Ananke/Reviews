@@ -232,7 +232,7 @@ const updateReviewsData = async (photosFile, charReviewsFile, characteristicsFil
 }
 
 // take command-line arguments for files and load
-if (process.argv.length >= 5 && argv[1] === 'run') {
+if (process.argv.length >= 5) {
   const filepaths = process.argv.slice(2).map(arg => path.join(__dirname, '../', arg));
   process.argv.length === 5 ? updateReviewsData(...filepaths) : runETL(...filepaths);
 }
