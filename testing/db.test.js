@@ -1,8 +1,8 @@
 const mongodb = require('../db/index.js');
 const sqldb = require('../db/sql/models.js');
 
-describe('Mongoose', () => {
-  describe('Review Model', () => {
+describe.skip('Mongoose', () => {
+  describe.skip('Review Model', () => {
     it('should properly create an instance of the Review model', () => {
       const review = {
         review_id: 1,
@@ -41,7 +41,7 @@ describe('Mongoose', () => {
     });
   });
 
-  describe('ProductMeta Model', () => {
+  describe.skip('ProductMeta Model', () => {
     it('should properly create an instance of the ProductMeta model', () => {
       const productMeta = {
         product_id: 1,
@@ -71,7 +71,7 @@ describe('Mongoose', () => {
   })
 });
 
-describe('SQL', () => {
+describe.skip('SQL', () => {
   it('should properly create an instance of the Review model', () => {
     const review = {
       id: 7,

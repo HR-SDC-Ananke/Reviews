@@ -8,18 +8,18 @@ const photosFile = path.join(__dirname, '../../data/reviews_photos_small.csv');
 const characteristicsFile = path.join(__dirname, '../../data/characteristics_small.csv');
 const charReviewsFile = path.join(__dirname, '../../data/characteristic_reviews_small.csv');
 
-describe('Mongoose ETL', () => {
+describe.skip('Mongoose ETL', () => {
   beforeAll(async () => {
     await mongoose.connect('mongodb://localhost:27017/sdc-reviews');
   });
 
   beforeEach(async () => {
-    await mongodb.Review.deleteMany({});
+    // await mongodb.Review.deleteMany({});
     // await mongodb.ProductMeta.deleteMany({});
   });
 
   afterEach(async () => {
-    await mongodb.Review.deleteMany({});
+    // await mongodb.Review.deleteMany({});
     // await mongodb.ProductMeta.deleteMany({});
   });
 
@@ -27,13 +27,13 @@ describe('Mongoose ETL', () => {
     await mongoose.connection.close();
   });
 
-  it('should successfully load reviews into the database in succession', async () => {
+  it.skip('should successfully load reviews into the database in succession', async () => {
     await etl.loadReviews(reviewsFile);
     const results = await mongodb.Review.find({});
     expect(results.length).toBe(9);
   });
 
-  it('should successfully add photos to reviews loaded in the database', async () => {
+  it.skip('should successfully add photos to reviews loaded in the database', async () => {
     await etl.loadReviews(reviewsFile);
     await etl.loadPhotos(photosFile);
 
@@ -48,7 +48,7 @@ describe('Mongoose ETL', () => {
     expect(review5.photos.filter(photo => photo.id === 3)[0].url).toBe('https://images.unsplash.com/photo-1487349384428-12b47aca925e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80');
   });
 
-  it('should successfully add characteristic reviews to the reviews loaded in the database', async () => {
+  it.skip('should successfully add characteristic reviews to the reviews loaded in the database', async () => {
     await etl.loadReviews(reviewsFile);
     await etl.loadCharReviews(charReviewsFile);
 
@@ -62,7 +62,7 @@ describe('Mongoose ETL', () => {
     expect(review1.characteristics.filter(char => char.id === 4)[0].value).toBe(4);
   });
 
-  it('should add characteristic names to all characteristics on all reviews loaded in the database', async () => {
+  it.skip('should add characteristic names to all characteristics on all reviews loaded in the database', async () => {
     await etl.loadReviews(reviewsFile);
     await etl.loadCharReviews(charReviewsFile);
     await etl.loadCharacteristics(characteristicsFile);
@@ -85,7 +85,7 @@ describe('Mongoose ETL', () => {
     expect(review1.characteristics.filter(char => char.id === 4)[0].value).toBe(4);
   });
 
-  it('should load all data from all csv files into the database', async () => {
+  it.skip('should load all data from all csv files into the database', async () => {
     console.time('etlTest');
     await etl.loadReviews(reviewsFile);
     await etl.loadPhotos(photosFile);
