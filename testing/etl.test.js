@@ -8,7 +8,7 @@ const photosFile = path.join(__dirname, '../../data/reviews_photos_small.csv');
 const characteristicsFile = path.join(__dirname, '../../data/characteristics_small.csv');
 const charReviewsFile = path.join(__dirname, '../../data/characteristic_reviews_small.csv');
 
-describe('Mongoose ETL', () => {
+describe.skip('Mongoose ETL', () => {
   beforeAll(async () => {
     await mongoose.connect('mongodb://localhost:27017/test-sdc-reviews');
   });

@@ -4,19 +4,24 @@
   "description": "Reviews API",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "server-dev": "nodemon server/index.js",
+
     "etl-small": "node etl/etl.js ../data/reviews_small.csv ../data/reviews_photos_small.csv ../data/characteristic_reviews_small.csv ../data/characteristics_small.csv",
     "update-etl-medium": "node etl/etl.js ../data/reviews_photos_medium.csv ../data/characteristic_reviews_medium.csv ../data/characteristics_small.csv",
     "etl": "node etl/etl.js ../data/reviews.csv ../data/reviews_photos.csv ../data/characteristic_reviews.csv ../data/characteristics.csv",
-    "make-reviews-file": "node ./helpers/etl-createFiles.js ../data/reviews.csv ../data/reviews_medium.csv 100000",
-    "make-photos-file": "node ./helpers/etl-createFiles.js ../data/reviews_photos.csv ../data/reviews_photos_medium.csv 100000",
-    "make-charReviews-file": "node ./helpers/etl-createFiles.js ../data/characteristic_reviews.csv ../data/characteristic_reviews_medium.csv 100000",
-    "make-chars-file": "node ./helpers/etl-createFiles.js ../data/characteristics.csv ../data/characteristics_medium.csv 100000",
     "load-reviews": "node ./etl/loadReviews.js ../data/reviews_medium.csv",
     "load-photos": "node ./etl/loadPhotos.js ../data/reviews_photos_medium.csv",
     "load-charReviews": "node ./etl/loadCharReviews.js ../data/characteristic_reviews_medium.csv",
-    "load-chars": "node ./etl/loadCharacteristics.js ../data/characteristics_medium.csv"
+    "load-chars": "node ./etl/loadCharacteristics.js ../data/characteristics_medium.csv",
+
+    "make-reviews-file": "node ./helpers/etl-createFiles.js ../data/reviews.csv ../data/reviews_medium.csv 100000",
+    "make-photos-file": "node ./helpers/etl-createFiles.js ../data/reviews_photos.csv ../data/reviews_photos_medium.csv 100000",
+    "make-charReviews-file": "node ./helpers/etl-createFiles.js ../data/characteristic_reviews.csv ../data/characteristic_reviews_medium.csv 100000",
+    "make-chars-file": "node ./helpers/etl-createFiles.js ../data/characteristics.csv ../data/characteristics_medium.csv 100000"
+  },
+  "jest": {
+    "coverageReporters": ["text"]
   },
   "repository": {
     "type": "git",
