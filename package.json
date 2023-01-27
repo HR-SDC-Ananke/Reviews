@@ -4,7 +4,7 @@
   "description": "Reviews API",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --coverage --detectOpenHandles",
     "server-dev": "nodemon server/index.js",
     "etl-small": "node etl/etl.js ../data/reviews_small.csv ../data/reviews_photos_small.csv ../data/characteristic_reviews_small.csv ../data/characteristics_small.csv",
     "update-etl-medium": "node etl/etl.js ../data/reviews_photos_medium.csv ../data/characteristic_reviews_medium.csv ../data/characteristics_small.csv",
@@ -19,8 +19,15 @@
     "make-chars-file": "node ./helpers/etl-createFiles.js ../data/characteristics.csv ../data/characteristics_medium.csv 100000"
   },
   "jest": {
+    "testEnvironment": "node",
     "coverageReporters": [
       "text"
+    ],
+    "collectCoverageFrom": [
+      "./server/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
     ]
   },
   "repository": {
@@ -36,9 +43,11 @@
   "devDependencies": {
     "jest": "^29.3.1",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
   },
   "dependencies": {
+    "axios": "^1.2.5",
     "csv": "^6.2.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
