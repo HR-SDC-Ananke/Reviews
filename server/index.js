@@ -30,7 +30,7 @@ app.get('/reviews/', async (req, res) => {
   }
 
   const sortBy = (a, b, descriptor) => {
-    if (descriptor === 'newest') return a.date - b.date;
+    if (descriptor === 'newest') return a.date.getTime() - b.date.getTime();
     if (descriptor === 'helpful') return a.helpfulness - b.helpfulness;
     return 0;
   }
