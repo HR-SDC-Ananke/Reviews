@@ -74,7 +74,7 @@ describe('Reviews', () => {
       it('should return all reviews for a given product id', async () => {
         const response = await axios.get(`${url}/reviews/?product_id=1`)
         .catch(err => console.log(`error getting product with id 1`));
-        expect(response.data.length).toBe(2);
+        expect(response.data.results.length).toBe(2);
         expect(response.status).toBe(200);
       });
       it('should send a status code of 400 for a bad request', async () => {
@@ -85,43 +85,49 @@ describe('Reviews', () => {
       it('should default to page 1 and count 5 when given no query params', async () => {
         const response = await axios.get(`${url}/reviews/?product_id=6000`)
         .catch(err => console.log(`error getting reviews for product with id 6000`));
-        expect(response.data.length).toBe(5);
+        expect(response.data.results.length).toBe(5);
+        expect(response.data.page).toBe(0);
+        expect(response.data.count).toBe(5);
       });
       it('should take a count parameter and return the correct number of reviews per page', async () => {
         const response = await axios.get(`${url}/reviews/?product_id=6000&count=7`)
         .catch(err => console.log(`error getting reviews for product 6000`));
-        expect(response.data.length).toBe(7);
+        expect(response.data.results.length).toBe(7);
+        expect(response.data.count).toBe(7);
       });
       it('should take a page parameter and return the correct page', async () => {
         const response = await axios.get(`${url}/reviews/?product_id=6000`)
         .catch(err => console.log(`error getting reviews for product with id 6000`));
         const pagedResponse = await axios.get(`${url}/reviews/?product_id=6000&page=2`)
         .catch(err => console.log(`error getting reviews for product 6000 page 2`));
-        expect(response.data.length).toBe(5);
-        expect(pagedResponse.data.length).toBe(5);
-        const review_ids = response.data.map(res => res.review_id);
-        const page2_review_ids = pagedResponse.data.map(res => res.review_id);
+        expect(response.data.results.length).toBe(5);
+        expect(pagedResponse.data.results.length).toBe(5);
+        const review_ids = response.data.results.map(res => res.review_id);
+        const page2_review_ids = pagedResponse.data.results.map(res => res.review_id);
         review_ids.forEach(review_id => expect(page2_review_ids.includes(review_id)).toBe(false));
+        expect(response.data.page).toBe(1);
       });
       it('should take a page and count parameter and return the correct reviews', async () => {
         const response = await axios.get(`${url}/reviews?product_id=6000&count=7&page=2`)
         .catch(err => console.log(`error getting reviews for product 6000 page 2 count 7`));
-        expect(response.data.length).toBe(7);
+        expect(response.data.results.length).toBe(7);
+        expect(response.data.page).toBe(1);
+        expect(response.data.count).toBe(7);
       });
       describe('sort', () => {
         it('should sort reviews by helpfulness', async () => {
           const response = await axios.get(`${url}/reviews?product_id=6000&sort=helpful&count=12`)
           .catch(err => console.log(err));
-          const sorted = response.data.slice().sort((a, b) => b.helpfulness - a.helpfulness);
-          expect(response.data).toEqual(sorted);
+          const sorted = response.data.results.slice().sort((a, b) => b.helpfulness - a.helpfulness);
+          expect(response.data.results).toEqual(sorted);
 
           const unsorted = await axios.get(`${url}/reviews?product_id=6000&count=12`)
           .catch(err => console.log(err));
-          expect(unsorted.data).not.toEqual(sorted);
+          expect(unsorted.data.results).not.toEqual(sorted);
 
           let isSorted = true;
-          for (let i = 0; i < response.data.length - 1; i++) {
-            if (response.data[i].helpfulness < response.data[i+1].helpfulness) isSorted = false;
+          for (let i = 0; i < response.data.results.length - 1; i++) {
+            if (response.data.results[i].helpfulness < response.data.results[i+1].helpfulness) isSorted = false;
           }
           expect(isSorted).toBe(true);
         });
@@ -130,13 +136,13 @@ describe('Reviews', () => {
         it('should sort reviews by relevance', async () => {
           const response = await axios.get(`${url}/reviews?product_id=6000&sort=relevant`)
           .catch(err => console.log(err));
-          expect(response.data.length).toBe(5);
+          expect(response.data.results.length).toBe(5);
         });
         it('should sort reviews by date', async () => {
           const response = await axios.get(`${url}/reviews?product_id=6000&count=12&sort=newest`)
           .catch(err => console.log(err));
-          const sorted = response.data.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-          expect(response.data).toEqual(sorted);
+          const sorted = response.data.results.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          expect(response.data.results).toEqual(sorted);
         });
       });
     });
