@@ -14,4 +14,29 @@ const getRatings = (reviewsArr) => {
   }, {});
 };
 
-module.exports = { sortBy, getRatings };
+// takes a reviews array and returns a recommended object
+const getRecommended = (reviewsArr) => {
+  return reviewsArr.reduce((recObj, review) => {
+    review.recommend ? recObj[1] += 1 : recObj[0] += 1;
+    return recObj;
+  }, { 0: 0, 1: 0 });
+}
+
+const getCharacteristics = (reviewsArr) => {
+  let counts = {};
+
+  return reviewsArr.reduce((recObj, review) => {
+    review.characteristics.forEach(char => {
+      if (!recObj.hasOwnProperty(char.name)) {
+        counts[char.name] = { count: 1, average: char.value };
+      } else {
+        counts[char.name][count] += 1;
+        counts[char.name][average] = (recObj[char.name][average] + char.value) / count;
+      }
+      recObj[char.name] = { "id": char.id, "value": counts[char.name][average].toFixed(4) };
+    });
+    return recObj;
+  }, {});
+}
+
+module.exports = { sortBy, getRatings, getRecommended, getCharacteristics };

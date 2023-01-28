@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const axios = require('axios');
 const mongodb = require('../db/index.js');
 const mongoose = require('mongoose');
-const { sortBy, getRatings } = require('../helpers/helpers.js');
+const { sortBy, getRatings, getRecommended, getCharacteristics } = require('../helpers/helpers.js');
 
 const app = express();
 
@@ -42,7 +42,18 @@ app.get('/reviews/meta', async (req, res) => {
   const product_id = req.query.product_id;
   if (!product_id) return res.sendStatus(400);
   const reviews = await mongodb.Review.find({ product_id }).catch(err => res.sendStatus(400));
-  const ratings = getRatings(reviews);
+
+  let ratings = {};
+  let recommended = {};
+  let characteristics = {};
+  if (reviews.length) {
+    ratings = getRatings(reviews);
+    recommended = getRecommended(reviews);
+    characteristics = getCharacteristics(reviews);
+  }
+
+  const productMeta = { product_id, ratings, recommended, characteristics };
+  res.status(200).send(productMeta);
 });
 
 const port = process.env.PORT || 5000;
