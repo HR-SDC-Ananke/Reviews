@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const axios = require('axios');
 const mongodb = require('../db/index.js');
 const mongoose = require('mongoose');
+const { sortBy, getRatings } = require('../helpers/helpers.js');
 
 const app = express();
 
@@ -29,12 +30,6 @@ app.get('/reviews/', async (req, res) => {
     reviews = await mongodb.Review.find({ product_id }).catch(err => res.sendStatus(400));
   }
 
-  const sortBy = (a, b, descriptor) => {
-    if (descriptor === 'newest') return a.date.getTime() - b.date.getTime();
-    if (descriptor === 'helpful') return a.helpfulness - b.helpfulness;
-    return 0;
-  }
-
   reviews.sort((a, b) => sortBy(a, b, sort));
   if (reviews.length > (page - 1) * count) {
     reviews = reviews.slice((page - 1) * count, page * count);
@@ -43,6 +38,12 @@ app.get('/reviews/', async (req, res) => {
   !reviews.length ? res.sendStatus(400) : res.status(200).send(reviews);
 });
 
+app.get('/reviews/meta', async (req, res) => {
+  const product_id = req.query.product_id;
+  if (!product_id) return res.sendStatus(400);
+  const reviews = await mongodb.Review.find({ product_id }).catch(err => res.sendStatus(400));
+  const ratings = getRatings(reviews);
+});
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
