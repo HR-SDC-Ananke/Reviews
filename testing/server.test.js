@@ -105,7 +105,8 @@ describe('Reviews', () => {
         const review_ids = response.data.results.map(res => res.review_id);
         const page2_review_ids = pagedResponse.data.results.map(res => res.review_id);
         review_ids.forEach(review_id => expect(page2_review_ids.includes(review_id)).toBe(false));
-        expect(response.data.page).toBe(1);
+        expect(response.data.page).toBe(0);
+        expect(pagedResponse.data.page).toBe(1);
       });
       it('should take a page and count parameter and return the correct reviews', async () => {
         const response = await axios.get(`${url}/reviews?product_id=6000&count=7&page=2`)

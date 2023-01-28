@@ -18,11 +18,11 @@ mongoose.connect('mongodb://localhost:27017/sdc-reviews');
 
 app.get('/reviews/', async (req, res) => {
   console.log(`req params: ${JSON.stringify(req.query)}`);
-  const count = req.query.count || 5;
-  const page = req.query.page || 1;
+  const count = parseInt(req.query.count || 5);
+  const page = parseInt(req.query.page || 1) - 1;
   const sort = req.query.sort || "newest";
   const product_id = req.query.product_id;
-  let reviews;
+  let reviews = [];
 
   if (!product_id) {
     reviews = await mongodb.Review.find({}).catch(err => res.sendStatus(400));
@@ -30,16 +30,24 @@ app.get('/reviews/', async (req, res) => {
     reviews = await mongodb.Review.find({ product_id }).catch(err => res.sendStatus(400));
   }
 
-  if (reviews.length) {
-    reviews.forEach(review => review.recommend = review.recommended);
-  }
+  if (!reviews.length) {
+    res.sendStatus(400);
+  } else {
+    // rename 'recommended' key to 'recommend'
+    reviews.forEach(review => {
+      review.recommend = review.recommended;
+      delete review['recommended'];
+    });
 
-  reviews.sort((a, b) => sortBy(a, b, sort));
-  if (reviews.length > (page - 1) * count) {
-    reviews = reviews.slice((page - 1) * count, page * count);
-  }
+    // sort the data
+    reviews.sort((a, b) => sortBy(a, b, sort));
+    if (reviews.length > page * count) {
+      reviews = reviews.slice(page * count, (page + 1) * count);
+    }
 
-  !reviews.length ? res.sendStatus(400) : res.status(200).send(reviews);
+    const result = { product: product_id, page, count, results: reviews };
+    res.status(200).send(result);
+  }
 });
 
 app.get('/reviews/meta', async (req, res) => {
