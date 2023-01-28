@@ -39,9 +39,30 @@ describe('Reviews', () => {
       });
       it.todo('should sort reviews by relevance');
     });
-    describe.skip('getRatings', () => {});
-    describe.skip('getRecommended', () => {});
-    describe.skip('getCharacteristics', () => {});
+    describe('getRatings', () => {
+      it('should return a ratings object with correct values', () => {
+        const expected = { 1: 2, 2: 3, 3: 1, 4: 3, 5: 5 };
+        const result = getRatings(reviews);
+        expect(result).toEqual(expected);
+      });
+    });
+    describe('getRecommended', () => {
+      it('should return a recommended object with the correct values', () => {
+        const expected = { 0: 2, 1: 12 };
+        const result = getRecommended(reviews);
+        expect(result).toEqual(expected);
+      });
+    });
+    describe('getCharacteristics', () => {
+      it('should return a characteristics object with the correct values', () => {
+        const expected = { "Quality": { id: 19956, value: "3.0714" } };
+        const result = getCharacteristics(reviews);
+        expect(Object.keys(result).length).toBe(Object.keys(expected).length);
+        Object.keys(result).forEach(charName => {
+          expect(result[charName]).toEqual(expected[charName]);
+        });
+      });
+    });
   });
 
   describe('Routes', () => {

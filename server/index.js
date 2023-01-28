@@ -30,6 +30,10 @@ app.get('/reviews/', async (req, res) => {
     reviews = await mongodb.Review.find({ product_id }).catch(err => res.sendStatus(400));
   }
 
+  if (reviews.length) {
+    reviews.forEach(review => review.recommend = review.recommended);
+  }
+
   reviews.sort((a, b) => sortBy(a, b, sort));
   if (reviews.length > (page - 1) * count) {
     reviews = reviews.slice((page - 1) * count, page * count);
