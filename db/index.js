@@ -7,7 +7,7 @@ const { Schema } = mongoose;
 // Schemas
 const reviewSchema = new Schema({
   review_id: { type: Number, index: true },
-  product_id: Number,
+  product_id: { type: Number, index: true },
   rating: Number,
   summary: String,
   recommended: Boolean,
