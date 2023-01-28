@@ -1,8 +1,8 @@
 
 // takes a sorting descriptor 'helpful', 'newest' or 'relevant' and sorts reviews accordingly
 const sortBy = (a, b, descriptor) => {
-  if (descriptor === 'newest') return a.date.getTime() - b.date.getTime();
-  if (descriptor === 'helpful') return a.helpfulness - b.helpfulness;
+  if (descriptor === 'newest') return new Date(a.date).getTime() - new Date(b.date).getTime();
+  if (descriptor === 'helpful') return b.helpfulness - a.helpfulness;
   return 0;
 }
 
