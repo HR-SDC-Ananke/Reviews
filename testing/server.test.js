@@ -147,6 +147,75 @@ describe('Reviews', () => {
         });
       });
     });
-  });
 
+    describe('Get /reviews/meta', () => {
+      jest.setTimeout(10000);
+      const url = `http://localhost:${process.env.PORT}`;
+
+      it('should get meta data for a given product_id', async () => {
+        const response = await axios.get(`${url}/reviews/meta?product_id=1`)
+        .catch(err => console.log(err));
+        const expected = {
+          product_id: "1",
+          ratings: {
+            4: 1,
+            5: 1
+          },
+          recommended: {
+            0: 1,
+            1: 1
+          },
+          characteristics: {
+            Fit: {
+              id: 1,
+              value: "4.0000"
+            },
+            Length: {
+              id: 2,
+              value: "3.5000"
+            },
+            Comfort: {
+              id: 3,
+              value: "5.0000"
+            },
+            Quality: {
+              id: 4,
+              value: "4.0000"
+            }
+          }
+        };
+        const wrong = {
+          product_id: 1,
+          ratings: {
+            4: 1,
+            5: 1
+          },
+          recommended: {
+            0: 1,
+            1: 1
+          },
+          characteristics: {
+            Fit: {
+              id: 1,
+              value: "2.5000"
+            },
+            Length: {
+              id: 7,
+              value: "3.5000"
+            },
+            Comfort: {
+              id: 3,
+              value: "5.0000"
+            },
+            Quality: {
+              id: 4,
+              value: "3.0000"
+            }
+          }
+        };
+        expect(response.data).toEqual(expected);
+        expect(response.data).not.toEqual(wrong);
+      });
+    });
+  });
 });
