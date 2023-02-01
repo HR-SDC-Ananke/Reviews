@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const { sortBy, getRatings, getRecommended, getCharacteristics } = require('../helpers/helpers.js');
 const exampleData = require('../exampleData/exampleReviews.js');
+const mongodb = require('../db/index.js');
 
 describe('Reviews', () => {
   afterAll(async () => {
@@ -179,7 +180,32 @@ describe('Reviews', () => {
     });
 
     describe('POST /reviews', () => {
-      it.todo('should post a new review to the database');
+      const url = `http://localhost:${process.env.PORT}`;
+
+      it('should post a new review to the database', async () => {
+        const review = {
+          product_id: "2",
+          rating: 5,
+          summary: "great product!",
+          body: "really great product. I'm happy, lol",
+          recommend: true,
+          name: "carl",
+          email: "carl@gmail.com",
+          photos: ["photourl.com", "photo2.url.com"],
+          characteristics: { "5": 3 }
+        };
+        const count = await mongodb.Review.find({ product_id: 2 }).count();
+
+        let newReview = await axios.post(`${url}/reviews`, review).catch(err => console.log(err));
+        console.log(newReview.data);
+        let reviewInDatabase = await mongodb.Review.findOne({ review_id: newReview.data.review_id }).catch(err => console.log(err));
+        expect(reviewInDatabase).not.toBe(undefined);
+        expect(reviewInDatabase.summary).toBe(review.summary);
+
+        const newCount = await mongodb.Review.find({ product_id: 2 }).count();
+        expect(newCount).toBe(count + 1);
+
+      });
     });
   });
 });

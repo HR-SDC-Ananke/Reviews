@@ -69,35 +69,58 @@ app.get('/reviews/meta', async (req, res) => {
 });
 
 app.post('/reviews', async (req, res) => {
+  // will need to make unique later
+  let photos = [];
+  if (req.body.photos.length) {
+    photos = req.body.photos.map(photo => {
+      return { id: Math.floor((Math.random() * 1000000000) + 5000000), url: photo }
+    });
+  }
+  let data = await mongodb.Review.findOne({
+    product_id: parseInt(req.body.product_id)
+  }, { "characteristics": 1, "_id": 0 })
+  .catch(err => console.log(`error retrieving data`, err));
+
+  let chars = data.characteristics;
+
+  console.log(JSON.stringify(chars));
+
+  let characteristics = chars.map(char => {
+    let result = Object.keys(req.body.characteristics)
+    .map(charId => ({ id: parseInt(charId), value: req.body.characteristics[charId] }))
+    .filter(charObj => charObj.id === char.id)[0];
+    result.name = char.name;
+    return result;
+  });
   let review = {
-    product_id: req.body.product_id,
+    product_id: parseInt(req.body.product_id),
     rating: req.body.rating,
     summary: req.body.summary,
     recommended: req.body.recommend || false,
     reported: false,
     body: req.body.body,
-    date: (new Date()).now(),
+    date: Date.now(),
     reviewer_name: req.body.name || "anonymous",
     reviewer_email: req.body.email || "",
     helpfulness: 0,
-    photos: req.body.photos || [],
-    characteristics: req.body.characteristics
+    photos,
+    characteristics // need to transform
   }
 
   if (!review.rating || !review.summary || !review.body || !review.characteristics.length) {
     return res.sendStatus(400);
   }
 
-  let review_id = (Math.random() * 1000000000) + 5000000;
+  let review_id = Math.floor((Math.random() * 1000000000) + 5000000);
   let review_id_exists = await mongodb.Review.find({ review_id }).count();
   while (review_id_exists) {
-    review_id = (Math.random() * 1000000000) + 5000000;
+    review_id = Math.floor((Math.random() * 1000000000) + 5000000);
     review_id_exists = await mongodb.Review.find({ review_id }).count();
   }
 
   review.review_id = review_id;
 
-  let newReview = await mongodb.Review.save(review).catch(err => console.log(err));
+  let newReview = await (new mongodb.Review(review)).save().catch(err => console.log(err));
   res.status(201).send(newReview);
 })
 
