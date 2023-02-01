@@ -177,5 +177,9 @@ describe('Reviews', () => {
         expect(response.data).not.toEqual(wrong);
       });
     });
+
+    describe('POST /reviews', () => {
+      it.todo('should post a new review to the database');
+    });
   });
 });

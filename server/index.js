@@ -68,6 +68,39 @@ app.get('/reviews/meta', async (req, res) => {
   res.status(200).send(productMeta);
 });
 
+app.post('/reviews', async (req, res) => {
+  let review = {
+    product_id: req.body.product_id,
+    rating: req.body.rating,
+    summary: req.body.summary,
+    recommended: req.body.recommend || false,
+    reported: false,
+    body: req.body.body,
+    date: (new Date()).now(),
+    reviewer_name: req.body.name || "anonymous",
+    reviewer_email: req.body.email || "",
+    helpfulness: 0,
+    photos: req.body.photos || [],
+    characteristics: req.body.characteristics
+  }
+
+  if (!review.rating || !review.summary || !review.body || !review.characteristics.length) {
+    return res.sendStatus(400);
+  }
+
+  let review_id = (Math.random() * 1000000000) + 5000000;
+  let review_id_exists = await mongodb.Review.find({ review_id }).count();
+  while (review_id_exists) {
+    review_id = (Math.random() * 1000000000) + 5000000;
+    review_id_exists = await mongodb.Review.find({ review_id }).count();
+  }
+
+  review.review_id = review_id;
+
+  let newReview = await mongodb.Review.save(review).catch(err => console.log(err));
+  res.status(201).send(newReview);
+})
+
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
   console.log(`listening on port ${port}...`);
