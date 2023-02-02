@@ -39,13 +39,16 @@ app.get('/reviews/', async (req, res) => {
       delete review['recommended'];
     });
 
+    // filter out reported reviews
+    let unreported = reviews.filter(review => !review.reported);
+
     // sort the data
-    reviews.sort((a, b) => sortBy(a, b, sort));
-    if (reviews.length > page * count) {
-      reviews = reviews.slice(page * count, (page + 1) * count);
+    unreported.sort((a, b) => sortBy(a, b, sort));
+    if (unreported.length > page * count) {
+      unreported = unreported.slice(page * count, (page + 1) * count);
     }
 
-    const result = { product: product_id, page, count, results: reviews };
+    const result = { product: product_id, page, count, results: unreported };
     res.status(200).send(result);
   }
 });
@@ -129,6 +132,12 @@ app.put(`/reviews/:review_id/helpful`, async (req, res) => {
   const update = await mongodb.Review.findOneAndUpdate({ review_id }, { $inc: { helpfulness: 1 } });
   res.sendStatus(204);
 });
+
+app.put(`/reviews/:review_id/report`, async (req, res) => {
+  const review_id = req.params.review_id;
+  const update = await mongodb.Review.findOneAndUpdate({ review_id }, { reported: true });
+  res.sendStatus(204);
+})
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {

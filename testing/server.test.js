@@ -146,6 +146,8 @@ describe('Reviews', () => {
           const sorted = response.data.results.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
           expect(response.data.results).toEqual(sorted);
         });
+
+        it.todo('should not return reported reviews');
       });
     });
 
@@ -220,6 +222,26 @@ describe('Reviews', () => {
         const updated = await mongodb.Review.findOne({ review_id });
         const result = updated.helpfulness;
         expect(result).toBe(helpfulness + 1);
+      });
+    });
+
+    describe('PUT /reviews/:review_id/report', () => {
+      const url = `http://localhost:${process.env.PORT}`;
+      it('should updated reported field on PUT report request', async () => {
+        const review_id = 2000;
+        const review = await mongodb.Review.findOne( { review_id });
+        const reported = review.reported;
+        expect(reported).toBe(false);
+        const response = await axios.put(`${url}/reviews/${review_id}/report`);
+        expect(response.status).toBe(204);
+
+        const updated = await mongodb.Review.findOne({ review_id });
+        const result = updated.reported;
+        expect(result).toBe(true);
+
+        const changeBack = await mongodb.Review.findOneAndUpdate({ review_id }, { reported });
+        const newResult = await mongodb.Review.findOne({ review_id });
+        expect(newResult.reported).toBe(false);
       });
     });
   });
