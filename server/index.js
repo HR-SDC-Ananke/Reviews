@@ -122,7 +122,13 @@ app.post('/reviews', async (req, res) => {
 
   let newReview = await (new mongodb.Review(review)).save().catch(err => console.log(err));
   res.status(201).send(newReview);
-})
+});
+
+app.put(`/reviews/:review_id/helpful`, async (req, res) => {
+  const review_id = req.params.review_id;
+  const update = await mongodb.Review.findOneAndUpdate({ review_id }, { $inc: { helpfulness: 1 } });
+  res.sendStatus(204);
+});
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {

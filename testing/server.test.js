@@ -179,7 +179,8 @@ describe('Reviews', () => {
       });
     });
 
-    describe('POST /reviews', () => {
+    describe.skip('POST /reviews', () => {
+      // TO DO, DELETE THE NEW REVIEWS FROM THE DATABASE AFTER TESTING
       const url = `http://localhost:${process.env.PORT}`;
 
       it('should post a new review to the database', async () => {
@@ -205,6 +206,20 @@ describe('Reviews', () => {
         const newCount = await mongodb.Review.find({ product_id: 2 }).count();
         expect(newCount).toBe(count + 1);
 
+      });
+    });
+
+    describe('PUT /reviews/:review_id/helpful', () => {
+      const url = `http://localhost:${process.env.PORT}`;
+      it('should increment helpfulness on PUT request', async () => {
+        const review_id = 1;
+        const review = await mongodb.Review.findOne({ review_id });
+        const helpfulness = review.helpfulness;
+        const response = await axios.put(`${url}/reviews/${review_id}/helpful`);
+        expect(response.status).toBe(204);
+        const updated = await mongodb.Review.findOne({ review_id });
+        const result = updated.helpfulness;
+        expect(result).toBe(helpfulness + 1);
       });
     });
   });
