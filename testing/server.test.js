@@ -28,13 +28,13 @@ describe('Reviews', () => {
         expect(isSorted).toBe(true);
       });
       it('should sort reviews by date', () => {
-        const expected = reviews.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        const expected = reviews.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         const result = reviews.slice().sort((a, b) => sortBy(a, b, 'newest'));
         expect(result).toEqual(expected);
 
         let isSorted = true;
         for (let i = 0; i < result.length - 1; i++) {
-          if (new Date(result[i].date).getTime() > new Date(result[i+1].date).getTime()) isSorted = false;
+          if (new Date(result[i].date).getTime() < new Date(result[i+1].date).getTime()) isSorted = false;
         }
         expect(isSorted).toBe(true);
       });
@@ -143,7 +143,7 @@ describe('Reviews', () => {
         it('should sort reviews by date', async () => {
           const response = await axios.get(`${url}/reviews?product_id=6000&count=12&sort=newest`)
           .catch(err => console.log(err));
-          const sorted = response.data.results.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          const sorted = response.data.results.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           expect(response.data.results).toEqual(sorted);
         });
 
