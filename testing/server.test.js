@@ -181,7 +181,7 @@ describe('Reviews', () => {
       });
     });
 
-    describe.skip('POST /reviews', () => {
+    describe('POST /reviews', () => {
       // TO DO, DELETE THE NEW REVIEWS FROM THE DATABASE AFTER TESTING
       const url = `http://localhost:${process.env.PORT}`;
 
@@ -201,13 +201,20 @@ describe('Reviews', () => {
 
         let newReview = await axios.post(`${url}/reviews`, review).catch(err => console.log(err));
         console.log(newReview.data);
-        let reviewInDatabase = await mongodb.Review.findOne({ review_id: newReview.data.review_id }).catch(err => console.log(err));
+        let review_id = newReview.data.review_id;
+        let reviewInDatabase = await mongodb.Review.findOne({ review_id }).catch(err => console.log(err));
         expect(reviewInDatabase).not.toBe(undefined);
         expect(reviewInDatabase.summary).toBe(review.summary);
 
         const newCount = await mongodb.Review.find({ product_id: 2 }).count();
         expect(newCount).toBe(count + 1);
 
+        // DELETE THE NEW REVIEW
+        await mongodb.Review.deleteOne({ review_id }).catch(err => console.log(`error deleting review ${review_id}`, err));
+        const oldCount = await mongodb.Review.find({ product_id: 2 }).count();
+        expect(oldCount).toBe(count);
+        const deleted = await mongodb.Review.findOne({ review_id });
+        expect(deleted).toBe(null);
       });
     });
 
