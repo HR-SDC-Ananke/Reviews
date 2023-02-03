@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-mongoose.set('strictQuery', false);
+// mongoose.set('strictQuery', false);
 // mongoose.connect('mongodb://localhost:27017/sdc-reviews');
 
 // Schemas
 const reviewSchema = new Schema({
-  review_id: { type: Number, index: true },
-  product_id: Number,
+  review_id: { type: Number, index: true, unique: true },
+  product_id: { type: Number, index: true },
   rating: Number,
   summary: String,
   recommended: Boolean,
