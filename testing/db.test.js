@@ -1,5 +1,34 @@
 const mongodb = require('../db/index.js');
 const sqldb = require('../db/sql/models.js');
+const mongoose = require('mongoose');
+
+describe.skip('Querying the Database', () => {
+  jest.setTimeout(10000);
+  beforeAll(async () => {
+    await mongoose.set('strictQuery', false);
+    await mongoose.connect('mongodb://localhost:27017/sdc-reviews');
+  });
+
+  it('should return reviews by review_id in under 50ms', async () => {
+    for (let i = 0; i < 100; i++) {
+      const review_id = Math.floor(Math.random() * 5000000);
+      const result = await mongodb.Review.findOne({ review_id });
+      expect(result).not.toBe(null);
+    }
+  });
+
+  it('should return reviews by product_id in under 50ms', async () => {
+    for (let i = 0; i < 100; i++) {
+      const product_id = Math.floor(Math.random() * 1000000);
+      const result = await mongodb.Review.find({ product_id });
+      expect(result).not.toBe(null);
+    }
+  });
+
+  afterAll(async () => {
+    mongoose.connection.close();
+  });
+});
 
 describe.skip('Mongoose', () => {
   describe.skip('Review Model', () => {

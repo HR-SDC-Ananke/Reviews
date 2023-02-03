@@ -3,6 +3,8 @@ const { Schema } = mongoose;
 
 // mongoose.set('strictQuery', false);
 // mongoose.connect('mongodb://localhost:27017/sdc-reviews');
+// const { logExecutionTime } = require('mongoose-execution-time');
+// mongoose.plugin(logExecutionTime);
 
 // Schemas
 const reviewSchema = new Schema({
