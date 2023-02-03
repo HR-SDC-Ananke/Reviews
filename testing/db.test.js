@@ -9,6 +9,10 @@ describe.skip('Querying the Database', () => {
     await mongoose.connect('mongodb://localhost:27017/sdc-reviews');
   });
 
+  afterAll(async () => {
+    mongoose.connection.close();
+  });
+
   it('should return reviews by review_id in under 50ms', async () => {
     for (let i = 0; i < 100; i++) {
       const review_id = Math.floor(Math.random() * 5000000);
@@ -25,9 +29,6 @@ describe.skip('Querying the Database', () => {
     }
   });
 
-  afterAll(async () => {
-    mongoose.connection.close();
-  });
 });
 
 describe.skip('Mongoose', () => {
