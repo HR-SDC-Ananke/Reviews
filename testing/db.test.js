@@ -2,7 +2,7 @@ const mongodb = require('../db/index.js');
 const sqldb = require('../db/sql/models.js');
 const mongoose = require('mongoose');
 
-describe.skip('Querying the Database', () => {
+describe('Querying the Database', () => {
   jest.setTimeout(10000);
   beforeAll(async () => {
     await mongoose.set('strictQuery', false);

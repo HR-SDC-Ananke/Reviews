@@ -31,7 +31,7 @@ app.get('/reviews/', async (req, res) => {
   }
 
   if (!reviews.length) {
-    res.sendStatus(400);
+    res.status(400).send(reviews);
   } else {
     // rename 'recommended' key to 'recommend'
     reviews.forEach(review => {
