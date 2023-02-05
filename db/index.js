@@ -3,8 +3,8 @@ const { Schema } = mongoose;
 
 // Schemas
 const reviewSchema = new Schema({
-  review_id: { type: Number, index: true, unique: true },
-  product_id: { type: Number, index: true },
+  review_id: { type: Number, index: false, unique: false },
+  product_id: { type: Number, index: false },
   rating: Number,
   summary: String,
   recommended: Boolean,
@@ -15,8 +15,8 @@ const reviewSchema = new Schema({
   reviewer_name: String,
   reviewer_email: String,
   helpfulness: Number,
-  photos: [{ id: { type: Number, index: true }, url: String }],
-  characteristics: [{ name: String, id: { type: Number, index: true }, value: Number }]
+  photos: [{ id: { type: Number, index: false }, url: String }],
+  characteristics: [{ name: String, id: { type: Number, index: false }, value: Number }]
 });
 
 // const productMetaSchema = new Schema({
