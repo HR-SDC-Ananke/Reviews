@@ -10,13 +10,11 @@ const productIds = require('../exampleData/productIds.js');
 export const options = {
   scenarios: {
     stress: {
-      executor: 'ramping-arrival-rate',
-      timeUnit: '1s',
-      preAllocatedVUs: 500,
+      executor: 'ramping-vus',
       stages: [
-        { duration: '10s', target: 350 },
-        { duration: '30s', target: 350 },
-        { duration: '10s', target: 0 }
+        { duration: '5s', target: 10 },
+        { duration: '10s', target: 10 },
+        { duration: '5s', target: 0 }
       ]
     }
   },
@@ -28,15 +26,6 @@ export const options = {
 
 export default function () {
   const url = 'http://localhost:5000';
-  // const lowIDs = [1, 2, 4, 5, 7];
-  // const midIDs = [10001, 10002, 10003, 10004, 10005];
-  // const bigIDs = [1000000, 1000002, 1000003, 1000004, 1000005];
-  // const dispersedIDs = [1, 100, 1000, 10001, 1000000];
-
-  // const id = lowIDs[Math.floor(Math.random() * 5)];
-  // const id = midIDs[Math.floor(Math.random() * 5)];
-  // const id = bigIDs[Math.floor(Math.random() * 5)];
-  // const id = dispersedIDs[Math.floor(Math.random() * 5)];
 
   const id = productIds[Math.floor(Math.random() * productIds.length)];
 
