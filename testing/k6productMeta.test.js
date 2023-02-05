@@ -12,8 +12,8 @@ export const options = {
     stress: {
       executor: 'ramping-vus',
       stages: [
-        { duration: '5s', target: 10 },
-        { duration: '10s', target: 10 },
+        { duration: '5s', target: 10000 },
+        { duration: '10s', target: 10000 },
         { duration: '5s', target: 0 }
       ]
     }
