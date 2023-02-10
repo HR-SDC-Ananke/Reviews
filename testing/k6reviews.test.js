@@ -2,16 +2,16 @@ import http from 'k6/http';
 import { sleep, check } from 'k6';
 const productIds = require('../exampleData/productIds.js');
 
-const target = 10; // requests per second
+const target = 100; // requests per second
 
 export const options = {
   scenarios: {
     stress: {
       executor: 'ramping-vus',
       stages: [
-        { duration: '5s', target },
         { duration: '10s', target },
-        { duration: '5s', target: 0 }
+        { duration: '30s', target },
+        { duration: '10s', target: 0 }
       ]
     }
   },
