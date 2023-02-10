@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-// mongoose.set('strictQuery', false);
-// mongoose.connect('mongodb://localhost:27017/sdc-reviews');
-
 // Schemas
 const reviewSchema = new Schema({
   review_id: { type: Number, index: true, unique: true },
