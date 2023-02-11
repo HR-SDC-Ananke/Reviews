@@ -3,6 +3,12 @@ const path = require('path');
 const { parse } = require('csv-parse');
 const mongodb = require('../db/index.js');
 const sqldb = require('../db/sql/models.js');
+const mongoose = require('mongoose');
+
+// connect to the database
+// comment out when testing etl
+mongoose.set('strictQuery', false);
+mongoose.connect('mongodb://localhost:27017/sdc-reviews');
 
 // helper function for removing single quotes from string data
 const stripQuotes = (data) => data.map(entry => {
@@ -215,6 +221,8 @@ const runETL = async (reviewsFile, photosFile, charReviewsFile, characteristicsF
   await loadCharReviews(charReviewsFile);
   await loadCharacteristics(characteristicsFile);
   console.timeEnd('etlProcess');
+  await mongoose.connection.close();
+  console.log('mongoose connection closed');
 }
 
 const updateReviewsData = async (photosFile, charReviewsFile, characteristicsFile) => {
