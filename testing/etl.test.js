@@ -10,6 +10,9 @@ const charReviewsFile = path.join(__dirname, '../../data/characteristic_reviews_
 
 describe('Mongoose ETL', () => {
   beforeAll(async () => {
+    // THE MONGOOSE CONNECTION INSIDE etl.js MUST BE CLOSED (OR COMMENTED OUT)
+    // OR THE DATABASE WILL GET WIPED
+    await mongoose.connection.close();
     await mongoose.connect('mongodb://localhost:27017/test-sdc-reviews');
   });
 
