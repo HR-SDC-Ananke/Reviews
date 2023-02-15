@@ -31,7 +31,8 @@ app.get('/reviews/', async (req, res) => {
   }
 
   if (!reviews.length) {
-    res.status(400).send(reviews);
+    const result = { product: product_id, page, count, results: reviews };
+    res.status(200).send(result);
   } else {
     // rename 'recommended' key to 'recommend'
     reviews.forEach(review => {
