@@ -137,7 +137,12 @@ app.put(`/reviews/:review_id/report`, async (req, res) => {
   const review_id = req.params.review_id;
   const update = await mongodb.Review.findOneAndUpdate({ review_id }, { reported: true });
   res.sendStatus(204);
-})
+});
+
+app.get(`/${process.env.LOADER_IO}`, async (req, res) => {
+  const token = process.env.LOADER_IO;
+  res.send(token);
+});
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
