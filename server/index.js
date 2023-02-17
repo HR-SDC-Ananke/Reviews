@@ -14,7 +14,11 @@ app.use(express.json());
 
 // connect to the database
 mongoose.set('strictQuery', false);
-mongoose.connect(`mongodb://${process.env.MONGO_IP}:27017/sdc-reviews`);
+mongoose.connect(`mongodb://${process.env.MONGO_IP}:27017`, {
+  user: process.env.MONGODB_USER,
+  pass: process.env.MONGODB_PASS,
+  dbName: 'sdc-reviews'
+});
 
 app.get('/reviews/', async (req, res) => {
   // console.log(`req params: ${JSON.stringify(req.query)}`);
