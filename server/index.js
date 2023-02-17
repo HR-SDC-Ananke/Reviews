@@ -17,7 +17,7 @@ mongoose.set('strictQuery', false);
 mongoose.connect('mongodb://localhost:27017/sdc-reviews');
 
 app.get('/reviews/', async (req, res) => {
-  console.log(`req params: ${JSON.stringify(req.query)}`);
+  // console.log(`req params: ${JSON.stringify(req.query)}`);
   const count = parseInt(req.query.count || 5);
   const page = parseInt(req.query.page || 1) - 1;
   const sort = req.query.sort || "newest";
