@@ -9,7 +9,7 @@ const { sortBy, getRatings, getRecommended, getCharacteristics } = require('../h
 const app = express();
 
 // middleware for logging requests to the console
-// app.use(morgan('tiny'));
+app.use(morgan('tiny'));
 app.use(express.json());
 
 // connect to the database
